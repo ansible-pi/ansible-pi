@@ -3,3 +3,6 @@ raspberrypi3bkitchen ansible_user=pi
 
 [433mhz]
 kitchenbox ansible_user=pi
+
+[musicbox]
+kitchenbox ansible_user=pi

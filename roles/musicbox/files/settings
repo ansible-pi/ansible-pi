@@ -1,0 +1,4 @@
+[General]
+Discoverable=true
+Alias=KitchenMusicBox
+Class=0x20041C

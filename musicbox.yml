@@ -1,0 +1,6 @@
+- name: Install Raspberry Pi
+  hosts: musicbox
+  become: yes
+
+  roles:
+  - musicbox
