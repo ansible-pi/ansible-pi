@@ -1,0 +1,27 @@
+- name: Checkout wiringPi
+  git:
+    repo: git://git.drogon.net/wiringPi
+    dest: "{{ pi_workspace }}/wiringPi"
+    force: yes
+
+- name: Build wiringPi
+  shell: bash build
+  args:
+    chdir: "{{ pi_workspace }}/wiringPi"
+
+- name: Checkout raspberry-remote
+  git:
+    repo: git://github.com/xkonni/raspberry-remote.git
+    dest: "{{ pi_workspace }}/raspberry-remote"
+    force: yes
+
+- name: Build wiringPi
+  shell: make send
+  args:
+    chdir: "{{ pi_workspace }}/raspberry-remote"
+
+- name: Symlink send command
+  file:
+    src="{{ pi_workspace }}/raspberry-remote/send"
+    dest="/usr/bin/send"
+    state=link

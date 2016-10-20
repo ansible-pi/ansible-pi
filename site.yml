@@ -1,6 +1,1 @@
-- name: Install Raspberry Pi
-  hosts: all
-  become: yes
-
-  roles:
-  - basic_install
+- include 433mhz.yml

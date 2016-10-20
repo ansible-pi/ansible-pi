@@ -1,0 +1,6 @@
+- name: Install Raspberry Pi
+  hosts: 433mhz
+  become: yes
+
+  roles:
+  - 433mhz

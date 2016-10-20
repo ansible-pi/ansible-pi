@@ -1,2 +1,5 @@
 [raspberrypi3b]
+raspberrypi3bkitchen ansible_user=pi
+
+[433mhz]
 raspberrypi ansible_user=pi
