@@ -1,3 +1,8 @@
+- name: Ensure workspace is there
+  file:
+    path: "{{ pi_workspace }}"
+    state: directory
+
 - name: Checkout wiringPi
   git:
     repo: git://git.drogon.net/wiringPi
@@ -15,10 +20,15 @@
     dest: "{{ pi_workspace }}/raspberry-remote"
     force: yes
 
-- name: Build wiringPi
+- name: Build raspberry-remote
   shell: make send
   args:
     chdir: "{{ pi_workspace }}/raspberry-remote"
+
+- name: Make send executable
+  file:
+    path="{{ pi_workspace }}/raspberry-remote/send"
+    mode=0755
 
 - name: Symlink send command
   file:
