@@ -8,22 +8,26 @@
     repo: git://git.drogon.net/wiringPi
     dest: "{{ pi_workspace }}/wiringPi"
     force: yes
+    register: wiring_pi_checkout
 
 - name: Build wiringPi
   shell: bash build
   args:
     chdir: "{{ pi_workspace }}/wiringPi"
+  when: wiring_pi_checkout.changed
 
 - name: Checkout raspberry-remote
   git:
     repo: git://github.com/xkonni/raspberry-remote.git
     dest: "{{ pi_workspace }}/raspberry-remote"
     force: yes
+  register: raspberry_remote_checkout
 
 - name: Build raspberry-remote
   shell: make send
   args:
     chdir: "{{ pi_workspace }}/raspberry-remote"
+  when: raspberry_remote_checkout.changed
 
 - name: Make send executable
   file:

@@ -9,8 +9,11 @@
     - pulseaudio-module-bluetooth
     - python-gobject
     - python-gobject-2
+  register: new_packages_installed
 
-# sudo reboot ?
+- include: reboot.yml
+  when: new_packages_installed.changed
+
 - name: User Management
   shell: usermod -a -G lp pi && usermod -a -G pulse-access,audio root && adduser pi pulse-access
 
@@ -28,13 +31,16 @@
 - name: Start pulseaudio
   shell: if pgrep "pulseaudio" > /dev/null; then echo "Running"; else pulseaudio -D; fi
   register: pulse_running
-  changed_when: pulse_running.changed and pulse_running.stdout="Running"
+  changed_when: pulse_running.changed and pulse_running.stdout=="Running"
 
 - name: Change Audio-Output to Audiojack
   shell: amixer cset numid=3 1
 
 - name: Change Volume
-  shell: amixer set Master 100% && pacmd set-sink-volume 0 65535
+  shell: amixer set Master 100%
+
+- name: Change sink Volume
+  shell: pacmd set-sink-volume 0 65535
 
 - name: Add Bluetooth audio conf
   copy:
@@ -46,19 +52,17 @@
     dest: /etc/bluetooth/main.conf
     src: main.conf
 
-- name: Configure Bluetooth dongle
-  copy:
-    dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
-    src: settings
+- name: Add pulseaudio to autostart (Hack)
+  lineinfile:
+    dest: /etc/rc.local
+    regexp: ^pulseaudio -D
+    insertbefore: exit 0
+    line: pulseaudio -D
 
-- name: Restart machine
-  command: shutdown -r now "Ansible triggered"
-  async: 0
-  poll: 0
-  ignore_errors: true
+# Add later when dongle is active
+# - name: Configure Bluetooth dongle
+#   copy:
+#     dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
+#     src: settings
 
-- name: Waiting for server to come back
-  local_action:
-    wait_for host={{ inventory_hostname }}
-             state=started
-  sudo: false
+#- include: reboot.yml

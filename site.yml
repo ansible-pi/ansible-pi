@@ -1,1 +1,3 @@
-- include 433mhz.yml
+- include: basic_install.yml
+- include: 433mhz.yml
+- include: musicbox.yml

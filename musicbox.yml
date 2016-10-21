@@ -1,6 +1,6 @@
-- name: Install Raspberry Pi
+- name: Install Raspberry Pi Bluetooth Music Box
   hosts: musicbox
   become: yes
 
   roles:
-  - musicbox
+  - {role: musicbox, tags: [musicbox]}
