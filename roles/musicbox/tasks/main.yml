@@ -14,8 +14,10 @@
 - include: reboot.yml
   when: new_packages_installed.changed
 
+# Todo: Do this with user module
 - name: User Management
   shell: usermod -a -G lp pi && usermod -a -G pulse-access,audio root && adduser pi pulse-access
+  changed_when: false
 
 - name: Add Pulse resample-method
   lineinfile:
@@ -35,12 +37,15 @@
 
 - name: Change Audio-Output to Audiojack
   shell: amixer cset numid=3 1
+  changed_when: false
 
 - name: Change Volume
   shell: amixer set Master 100%
+  changed_when: false
 
 - name: Change sink Volume
   shell: pacmd set-sink-volume 0 65535
+  changed_when: false
 
 - name: Add Bluetooth audio conf
   copy:
@@ -59,10 +64,10 @@
     insertbefore: exit 0
     line: pulseaudio -D
 
-# Add later when dongle is active
-# - name: Configure Bluetooth dongle
-#   copy:
-#     dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
-#     src: settings
+Add later when dongle is active
+- name: Configure Bluetooth dongle
+  copy:
+    dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
+    src: settings
 
-#- include: reboot.yml
+- include: reboot.yml
