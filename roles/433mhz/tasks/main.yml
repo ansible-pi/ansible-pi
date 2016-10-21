@@ -5,37 +5,37 @@
 
 - name: Checkout wiringPi
   git:
-    repo: git://git.drogon.net/wiringPi
-    dest: "{{ pi_workspace }}/wiringPi"
+    repo: "{{ wiring_pi_repo }}"
+    dest: "{{ pi_workspace }}/{{ wiring_pi_name }}"
     force: yes
     register: wiring_pi_checkout
 
 - name: Build wiringPi
   shell: bash build
   args:
-    chdir: "{{ pi_workspace }}/wiringPi"
+    chdir: "{{ pi_workspace }}/{{ wiring_pi_name }}"
   when: wiring_pi_checkout.changed
 
 - name: Checkout raspberry-remote
   git:
-    repo: git://github.com/xkonni/raspberry-remote.git
-    dest: "{{ pi_workspace }}/raspberry-remote"
+    repo: "{{ raspberry_remote_repo }}"
+    dest: "{{ pi_workspace }}/{{ raspberry_remote_name }}"
     force: yes
   register: raspberry_remote_checkout
 
 - name: Build raspberry-remote
   shell: make send
   args:
-    chdir: "{{ pi_workspace }}/raspberry-remote"
+    chdir: "{{ pi_workspace }}/{{ raspberry_remote_name }}"
   when: raspberry_remote_checkout.changed
 
 - name: Make send executable
   file:
-    path="{{ pi_workspace }}/raspberry-remote/send"
+    path="{{ pi_workspace }}/{{ raspberry_remote_name }}/send"
     mode=0755
 
 - name: Symlink send command
   file:
-    src="{{ pi_workspace }}/raspberry-remote/send"
+    src="{{ pi_workspace }}/{{ raspberry_remote_name }}/send"
     dest="/usr/bin/send"
     state=link
