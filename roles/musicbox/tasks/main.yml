@@ -11,9 +11,6 @@
     - python-gobject-2
   register: new_packages_installed
 
-- include: reboot.yml
-  when: new_packages_installed.changed
-
 # Todo: Do this with user module
 - name: User Management
   shell: usermod -a -G lp pi && usermod -a -G pulse-access,audio root && adduser pi pulse-access
@@ -24,16 +21,28 @@
     dest: /etc/pulse/daemon.conf
     regexp: ^resample-method
     line: resample-method = trivial
+  register: pulse_daemon
 
 - name: Add Pulse addons
   copy:
     dest: /etc/pulse/system.pa
     src: system.pa
+  register: pulse_system
 
-- name: Start pulseaudio
-  shell: if pgrep "pulseaudio" > /dev/null; then echo "Running"; else pulseaudio -D; fi
-  register: pulse_running
-  changed_when: pulse_running.changed and pulse_running.stdout=="Running"
+- name: Add pulseaudio to autostart (Hack)
+  lineinfile:
+    dest: /etc/rc.local
+    regexp: ^pulseaudio -D
+    insertbefore: exit 0
+    line: pulseaudio -D
+  register: pulse_autostart
+
+- include: reboot.yml
+  when: new_packages_installed.changed \
+        or pulse_daemon.changed \
+        or pulse_system.changed \
+        or pulse_autostart.changed
+
 
 - name: Change Audio-Output to Audiojack
   shell: amixer cset numid=3 1
@@ -51,23 +60,22 @@
   copy:
     dest: /etc/bluetooth/audio.conf
     src: audio.conf
+  register: bluetooth_audio
 
 - name: Add Bluetooth main conf
   copy:
     dest: /etc/bluetooth/main.conf
     src: main.conf
-
-- name: Add pulseaudio to autostart (Hack)
-  lineinfile:
-    dest: /etc/rc.local
-    regexp: ^pulseaudio -D
-    insertbefore: exit 0
-    line: pulseaudio -D
+  register: bluetooth_main
 
 Add later when dongle is active
 - name: Configure Bluetooth dongle
   copy:
     dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
     src: settings
+  register: bluetooth_settings
 
 - include: reboot.yml
+  when: bluetooth_audio.changed \
+        or bluetooth_main.changed \
+        or bluetooth_settings.changed \
