@@ -7,7 +7,7 @@
   git:
     repo: git://git.drogon.net/wiringPi
     dest: "{{ pi_workspace }}/wiringPi"
-    force: yes
+    update: yes
 
 - name: Build wiringPi
   shell: bash build
@@ -18,7 +18,7 @@
   git:
     repo: git://github.com/xkonni/raspberry-remote.git
     dest: "{{ pi_workspace }}/raspberry-remote"
-    force: yes
+    update: yes
 
 - name: Build raspberry-remote
   shell: make send

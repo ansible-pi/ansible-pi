@@ -3,3 +3,7 @@
     update_cache: "yes"
     upgrade: "yes"
 
+- name: Install base packages
+  package:
+    name: git
+    state: latest

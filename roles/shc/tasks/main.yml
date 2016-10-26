@@ -1,0 +1,40 @@
+- name: Install Webserver packages
+  package:
+    name: git
+    state: latest
+  with_items:
+    - php5-common
+    - php5-cgi
+    - php5-cli
+    - php-apc
+    - apache2
+    - libapache2-mod-php5
+    - redis-server
+    - php5-redis
+    - php5-dev
+
+# Todo Falls Raspbian Jessie (Light) verwendet wird, muss der DocumentRoot des Webserver angepasst werden. Dazu in der Datei /etc/apache2/sites-available/000-default.conf die Zeile 12 mit folgendem Eintrag ersetzen und den Webserver neu starten
+#
+# /var/www
+# sudo service apache2 restart
+
+- name: Install php-redis
+  git:
+    repo: https://github.com/phpredis/phpredis.git
+    dest: /opt/phpredis
+    update: yes
+
+- name: Configure phpredis
+  shell: ./configure
+  args:
+    chdir: "/opt/phpredis"
+
+- name: Make phpredis
+  shell: make
+  args:
+    chdir: "/opt/phpredis"
+
+- name: Install phpredis
+  shell: make install
+  args:
+    chdir: "/opt/phpredis"
