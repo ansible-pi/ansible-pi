@@ -1,0 +1,7 @@
+# Wiring Pi
+wiring_pi_name: wiringPi
+wiring_pi_repo: git://git.drogon.net/wiringPi
+
+# raspberry remote (433MHz)
+raspberry_remote_name: raspberry-remote
+raspberry_remote_repo: git://github.com/xkonni/raspberry-remote.git

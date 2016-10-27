@@ -1,0 +1,81 @@
+- name: Install dependencies
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - alsa-utils
+    - bluez
+    - bluez-tools
+    - pulseaudio-module-bluetooth
+    - python-gobject
+    - python-gobject-2
+  register: new_packages_installed
+
+# Todo: Do this with user module
+- name: User Management
+  shell: usermod -a -G lp pi && usermod -a -G pulse-access,audio root && adduser pi pulse-access
+  changed_when: false
+
+- name: Add Pulse resample-method
+  lineinfile:
+    dest: /etc/pulse/daemon.conf
+    regexp: ^resample-method
+    line: resample-method = trivial
+  register: pulse_daemon
+
+- name: Add Pulse addons
+  copy:
+    dest: /etc/pulse/system.pa
+    src: system.pa
+  register: pulse_system
+
+- name: Add pulseaudio to autostart (Hack)
+  lineinfile:
+    dest: /etc/rc.local
+    regexp: ^pulseaudio -D
+    insertbefore: exit 0
+    line: pulseaudio -D
+  register: pulse_autostart
+
+- include: reboot.yml
+  when: new_packages_installed.changed \
+        or pulse_daemon.changed \
+        or pulse_system.changed \
+        or pulse_autostart.changed
+
+
+- name: Change Audio-Output to Audiojack
+  shell: amixer cset numid=3 1
+  changed_when: false
+
+- name: Change Volume
+  shell: amixer set Master 100%
+  changed_when: false
+
+- name: Change sink Volume
+  shell: pacmd set-sink-volume 0 65535
+  changed_when: false
+
+- name: Add Bluetooth audio conf
+  copy:
+    dest: /etc/bluetooth/audio.conf
+    src: audio.conf
+  register: bluetooth_audio
+
+- name: Add Bluetooth main conf
+  copy:
+    dest: /etc/bluetooth/main.conf
+    src: main.conf
+  register: bluetooth_main
+
+Add later when dongle is active
+- name: Configure Bluetooth dongle
+  copy:
+    dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
+    src: settings
+  register: bluetooth_settings
+
+- include: reboot.yml
+  when: bluetooth_audio.changed \
+        or bluetooth_main.changed \
+        or bluetooth_settings.changed \

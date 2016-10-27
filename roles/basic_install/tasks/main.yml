@@ -3,3 +3,6 @@
     update_cache: "yes"
     upgrade: "yes"
 
+- name: Set Hostname
+  hostname:
+    name: "{{ machine_name }}"
