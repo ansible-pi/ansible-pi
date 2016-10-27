@@ -1,4 +1,5 @@
 [General]
 Discoverable=true
+DiscoverableTimeout=0
 Alias=KitchenMusicBox
-Class=0x20041C
+#Class=0x20041C
