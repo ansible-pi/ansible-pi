@@ -3,7 +3,7 @@
 
 - name: Install Webserver packages
   package:
-    name: git
+    name: "{{ item }}"
     state: latest
   with_items:
     - php5-common
@@ -21,30 +21,36 @@
 # /var/www
 # sudo service apache2 restart
 
-- name: Install php-redis
+- name: Download php-redis
   git:
     repo: https://github.com/phpredis/phpredis.git
     dest: "{{ phpredis_install_folder }}"
     update: yes
-  register: php-redis
+  register: php_redis
+
+- name: phpize phpredis
+  shell: phpize
+  args:
+    chdir: "{{ phpredis_install_folder }}"
+  when: php_redis.changed
 
 - name: Configure phpredis
   shell: ./configure
   args:
     chdir: "{{ phpredis_install_folder }}"
-  when: php-redis.changed
+  when: php_redis.changed
 
 - name: Make phpredis
   shell: make
   args:
     chdir: "{{ phpredis_install_folder }}"
-  when: php-redis.changed
+  when: php_redis.changed
 
 - name: Install phpredis
   shell: make install
   args:
     chdir: "{{ phpredis_install_folder }}"
-  when: php-redis.changed
+  when: php_redis.changed
 
 - name: Create ramdisk
   lineinfile:
@@ -52,3 +58,15 @@
     regexp: "tmpfs         /var/www/shc/rwf/data/cache"
     line: "tmpfs         /var/www/shc/rwf/data/cache      tmpfs   nosuid,size=5M         0       0"
     validate: "mount -fav"
+
+- name: Download SHC
+  git:
+    repo: https://github.com/agent4788/SHC_Framework
+    dest: "{{ shc_install_folder }}"
+    update: yes
+  register: shc
+
+- name: Install SHC
+  shell: php install.php
+  args:
+    chdir: "{{ shc_install_folder }}"

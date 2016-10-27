@@ -1,6 +1,7 @@
-- name: Install Raspberry Pi
+- name: Install Raspberry Pi 433MHz transmitter
   hosts: 433mhz
   become: yes
 
   roles:
-  - 433mhz
+  - { role: 433mhz, tags: [433mhz] }
+  - { role: shc, tags: [shc] }
