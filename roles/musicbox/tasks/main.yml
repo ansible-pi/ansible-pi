@@ -38,11 +38,10 @@
   register: pulse_autostart
 
 - include: reboot.yml
-  when: new_packages_installed.changed \
-        or pulse_daemon.changed \
-        or pulse_system.changed \
+  when: new_packages_installed.changed
+        or pulse_daemon.changed
+        or pulse_system.changed
         or pulse_autostart.changed
-
 
 - name: Change Audio-Output to Audiojack
   shell: amixer cset numid=3 1
@@ -68,7 +67,6 @@
     src: main.conf
   register: bluetooth_main
 
-Add later when dongle is active
 - name: Configure Bluetooth dongle
   copy:
     dest: "/var/lib/bluetooth/{{ BLUETOOTH_MAC }}/settings"
@@ -76,6 +74,6 @@ Add later when dongle is active
   register: bluetooth_settings
 
 - include: reboot.yml
-  when: bluetooth_audio.changed \
-        or bluetooth_main.changed \
-        or bluetooth_settings.changed \
+  when: bluetooth_audio.changed
+        or bluetooth_main.changed
+        or bluetooth_settings.changed
