@@ -57,7 +57,7 @@
     dest: /etc/fstab
     regexp: "tmpfs         /var/www/shc/rwf/data/cache"
     line: "tmpfs         /var/www/shc/rwf/data/cache      tmpfs   nosuid,size=5M         0       0"
-    validate: "mount -fav"
+    validate: "mount -fav #%s"
 
 - name: Download SHC
   git:
