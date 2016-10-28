@@ -7,7 +7,7 @@
   git:
     repo: "{{ wiring_pi_repo }}"
     dest: "{{ pi_workspace }}/{{ wiring_pi_name }}"
-    force: yes
+    update: yes
     register: wiring_pi_checkout
 
 - name: Build wiringPi
@@ -20,7 +20,7 @@
   git:
     repo: "{{ raspberry_remote_repo }}"
     dest: "{{ pi_workspace }}/{{ raspberry_remote_name }}"
-    force: yes
+    update: yes
   register: raspberry_remote_checkout
 
 - name: Build raspberry-remote

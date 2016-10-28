@@ -1,0 +1,2 @@
+phpredis_install_folder: /opt/phpredis
+shc_install_folder: /var/www/shc

@@ -3,6 +3,21 @@
     update_cache: "yes"
     upgrade: "yes"
 
+- name: Install base packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - git
+    - screen
+    - ntp
+
+- name: Start NTP
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+
 - name: Set Hostname
   hostname:
     name: "{{ machine_name }}"
