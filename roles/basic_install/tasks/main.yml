@@ -17,3 +17,7 @@
     name: ntp
     state: started
     enabled: yes
+
+- name: Set Hostname
+  hostname:
+    name: "{{ machine_name }}"
